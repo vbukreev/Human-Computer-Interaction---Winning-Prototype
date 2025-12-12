@@ -1,0 +1,96 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="Join a Trivia Mode session with your friends using a code.">
+    <title>Quizey | Trivia Mode</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Baloo+2:wght@600&family=Nunito:wght@400;600;700;800&display=swap" rel="stylesheet">
+    <style>
+        :root { --text-strong: #0f172a; --text-muted: #526275; }
+        * { box-sizing: border-box; }
+        body {
+            margin: 0;
+            min-height: 100vh;
+            font-family: 'Nunito', system-ui, sans-serif;
+            color: var(--text-strong);
+            background: linear-gradient(180deg, #b5e2ff, #d4c8ff);
+            padding: clamp(22px, 5vw, 40px);
+            position: relative;
+            overflow-x: hidden;
+        }
+        body::before, body::after {
+            content: '';
+            position: absolute;
+            border-radius: 50%;
+            filter: blur(70px);
+            opacity: 0.22;
+        }
+        body::before { width: 420px; height: 420px; background: #73e7ff; top: -220px; left: -160px; }
+        body::after { width: 360px; height: 360px; background: #c69bff; bottom: -200px; right: -160px; }
+        .page { position: relative; z-index: 1; max-width: 720px; margin: 0 auto; display: grid; gap: 18px; }
+        header { display: flex; align-items: center; justify-content: space-between; gap: 10px; }
+        .brand { display: inline-flex; align-items: center; gap: 10px; font-family: 'Baloo 2', cursive; font-size: 24px; font-weight: 700; color: #7c3aed; }
+        .brand .icon { width: 36px; height: 36px; border-radius: 12px; background: linear-gradient(120deg, #66d3ff, #9c6bff); display: grid; place-items: center; color: #ffe58a; box-shadow: 0 8px 16px rgba(124,58,237,0.25); }
+        a { color: var(--text-strong); text-decoration: none; font-weight: 700; }
+        .card {
+            padding: 22px 20px;
+            background: rgba(255,255,255,0.94);
+            border-radius: 20px;
+            box-shadow: 0 16px 30px rgba(33,43,72,0.14);
+            border: 1px solid rgba(255,255,255,0.8);
+            display: grid;
+            gap: 14px;
+        }
+        h1 { margin: 0; font-family: 'Baloo 2', cursive; font-size: clamp(26px, 5vw, 34px); }
+        p { margin: 0; color: var(--text-muted); line-height: 1.6; }
+        .form { display: grid; gap: 12px; }
+        label { font-weight: 800; color: var(--text-strong); }
+        input {
+            padding: 12px 14px;
+            border-radius: 14px;
+            border: 1px solid rgba(15,23,42,0.12);
+            font-size: 16px;
+            font-weight: 700;
+            background: rgba(255,255,255,0.96);
+        }
+        .actions { display: flex; gap: 10px; flex-wrap: wrap; align-items: center; }
+        .btn {
+            display: inline-flex; align-items: center; gap: 8px;
+            padding: 12px 16px; border-radius: 14px; border: none;
+            font-weight: 800; cursor: pointer; text-decoration: none; color: #0f172a;
+        }
+        .btn.primary { background: linear-gradient(120deg, #66d3ff, #9c6bff); box-shadow: 0 12px 22px rgba(120,116,255,0.22); }
+        .btn.secondary { background: rgba(255,255,255,0.94); border: 1px solid rgba(15,23,42,0.12); }
+        .pill-row { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 10px; }
+        .pill { padding: 12px 12px; background: rgba(15,23,42,0.06); border-radius: 14px; font-weight: 700; color: var(--text-strong); }
+    </style>
+</head>
+<body>
+    <div class="page">
+        <header>
+            <div class="brand"><span class="icon">💡</span>Quizey</div>
+            <a href="campus-quiz.html">← Back to home</a>
+        </header>
+        <section class="card">
+            <h1>Trivia Mode</h1>
+            <p>Enter the room code your host shares to connect all players and start a live trivia round.</p>
+            <div class="form">
+                <label for="room">Room code</label>
+                <input id="room" name="room" type="text" placeholder="e.g., 7F3KQ8" inputmode="uppercase" maxlength="10">
+            </div>
+            <div class="actions">
+                <button class="btn primary">Join room</button>
+                <button class="btn secondary" aria-label="Create a new room">Create new room</button>
+            </div>
+            <div class="pill-row">
+                <div class="pill">Instant join with code</div>
+                <div class="pill">Ideal for friends or class games</div>
+                <div class="pill">Leaderboard updates live</div>
+            </div>
+        </section>
+    </div>
+</body>
+</html>

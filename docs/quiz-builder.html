@@ -1,0 +1,255 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Quizey | Quiz Builder</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Baloo+2:wght@600&family=Nunito:wght@400;600;700;800&display=swap" rel="stylesheet">
+    <style>
+        :root { --text-strong: #0f172a; --text-muted: #526275; }
+        * { box-sizing: border-box; }
+        body {
+            margin: 0;
+            min-height: 100vh;
+            font-family: 'Nunito', system-ui, sans-serif;
+            color: var(--text-strong);
+            background: linear-gradient(180deg, #b5e2ff, #d4c8ff);
+            padding: clamp(22px, 5vw, 40px);
+            position: relative;
+            overflow-x: hidden;
+        }
+        body::before, body::after {
+            content: '';
+            position: absolute;
+            border-radius: 50%;
+            filter: blur(70px);
+            opacity: 0.22;
+        }
+        body::before { width: 420px; height: 420px; background: #73e7ff; top: -220px; left: -160px; }
+        body::after { width: 360px; height: 360px; background: #c69bff; bottom: -200px; right: -160px; }
+        .page { position: relative; z-index: 1; max-width: 760px; margin: 0 auto; display: grid; gap: 16px; }
+        header { display: flex; align-items: center; justify-content: space-between; gap: 12px; flex-wrap: wrap; }
+        h1 { margin: 0; font-family: 'Baloo 2', cursive; font-size: clamp(26px, 5vw, 34px); }
+        a { color: var(--text-strong); font-weight: 700; text-decoration: none; }
+        .card {
+            padding: 22px 20px;
+            background: rgba(255,255,255,0.94);
+            border-radius: 20px;
+            border: 1px solid rgba(255,255,255,0.8);
+            box-shadow: 0 16px 30px rgba(33,43,72,0.14);
+            display: grid;
+            gap: 14px;
+        }
+        .form-grid { display: grid; gap: 12px; }
+        label { font-weight: 800; color: var(--text-strong); }
+        input, textarea, select {
+            width: 100%;
+            padding: 12px 14px;
+            border-radius: 12px;
+            border: 1px solid rgba(15,23,42,0.12);
+            font-weight: 700;
+            background: rgba(255,255,255,0.96);
+        }
+        textarea { min-height: 90px; resize: vertical; }
+        .actions { display: flex; gap: 10px; flex-wrap: wrap; }
+        button {
+            padding: 12px 16px;
+            border-radius: 12px;
+            border: none;
+            font-weight: 800;
+            cursor: pointer;
+        }
+        .primary { background: linear-gradient(120deg, #66d3ff, #9c6bff); color: #0f172a; box-shadow: 0 10px 18px rgba(120,116,255,0.22); }
+        .ghost { background: rgba(255,255,255,0.9); border: 1px solid rgba(15,23,42,0.12); }
+        .question-card {
+            padding: 12px 12px 10px;
+            border: 1px solid rgba(15,23,42,0.12);
+            border-radius: 12px;
+            background: rgba(255,255,255,0.96);
+            display: grid;
+            gap: 8px;
+        }
+        .question-card h4 { margin: 0; }
+        .question-grid { display: grid; gap: 8px; }
+        .small-input { padding: 10px 12px; border-radius: 10px; border: 1px solid rgba(15,23,42,0.12); font-weight: 700; }
+        .question-actions { display: flex; gap: 8px; flex-wrap: wrap; }
+    </style>
+</head>
+<body>
+    <div class="page">
+        <header>
+            <h1>Quiz Builder</h1>
+            <a href="campus-quiz.html" id="back-link">← Return to home</a>
+        </header>
+        <section class="card">
+            <form id="builder-form" class="form-grid">
+                <input type="hidden" id="quiz-id">
+                <div>
+                    <label for="quiz-title">Quiz title</label>
+                    <input id="quiz-title" name="title" type="text" placeholder="e.g., Intro to Biology" required>
+                </div>
+                <div>
+                    <label for="quiz-desc">Description</label>
+                    <textarea id="quiz-desc" name="desc" placeholder="What this quiz covers" required></textarea>
+                </div>
+                <div>
+                    <label for="quiz-subject">Subject</label>
+                    <input id="quiz-subject" name="subject" type="text" placeholder="Biology 101" required>
+                </div>
+                <div>
+                    <label for="quiz-count">Approx. questions</label>
+                    <input id="quiz-count" name="count" type="number" min="1" max="200" value="10" required>
+                </div>
+                <div>
+                    <label for="quiz-level">Difficulty</label>
+                    <select id="quiz-level" name="level">
+                        <option value="Beginner">Beginner</option>
+                        <option value="Intermediate" selected>Intermediate</option>
+                        <option value="Advanced">Advanced</option>
+                    </select>
+                </div>
+                <div>
+                    <label>Questions</label>
+                    <div id="questions"></div>
+                    <div class="actions">
+                        <button type="button" class="primary" id="add-question">Add question</button>
+                    </div>
+                </div>
+                <p id="builder-error" role="alert" style="margin:0;color:#b91c1c;font-weight:700;display:none;"></p>
+                <div class="actions">
+                    <button type="submit" class="primary">Save quiz</button>
+                    <button type="button" class="ghost" id="cancel-btn">Cancel</button>
+                </div>
+            </form>
+        </section>
+    </div>
+    <script>
+        const form = document.getElementById('builder-form');
+        const cancelBtn = document.getElementById('cancel-btn');
+        const idField = document.getElementById('quiz-id');
+        const questionsEl = document.getElementById('questions');
+        const addQuestionBtn = document.getElementById('add-question');
+        const params = new URLSearchParams(location.search);
+        const editId = params.get('edit');
+        const storageKey = 'quizzyCustomQuizzes';
+
+        function loadQuizzes() {
+            try {
+                const raw = localStorage.getItem(storageKey);
+                return raw ? JSON.parse(raw) : [];
+            } catch (e) {
+                console.error(e);
+                return [];
+            }
+        }
+        function saveQuizzes(list) {
+            localStorage.setItem(storageKey, JSON.stringify(list));
+        }
+        function populateForm(quiz) {
+            idField.value = quiz.id;
+            document.getElementById('quiz-title').value = quiz.title || '';
+            document.getElementById('quiz-desc').value = quiz.desc || '';
+            document.getElementById('quiz-subject').value = quiz.subject || '';
+            document.getElementById('quiz-count').value = quiz.count || 10;
+            document.getElementById('quiz-level').value = quiz.level || 'Intermediate';
+            if (Array.isArray(quiz.questions)) {
+                quiz.questions.forEach(addQuestionCard);
+            }
+        }
+        if (editId) {
+            const quizzes = loadQuizzes();
+            const existing = quizzes.find(q => q.id === editId);
+            if (existing) populateForm(existing);
+        }
+        if (!questionsEl.children.length) {
+            addQuestionCard();
+        }
+
+        function addQuestionCard(data = {}) {
+            const idx = questionsEl.children.length + 1;
+            const card = document.createElement('div');
+            card.className = 'question-card';
+            card.innerHTML = `
+                <h4>Question ${idx}</h4>
+                <div class="question-grid">
+                    <input class="small-input question-text" type="text" placeholder="Question text" value="${data.text || ''}" required>
+                    <input class="small-input answer" type="text" placeholder="Answer A" value="${data.answers ? (data.answers[0] || '') : ''}" required>
+                    <input class="small-input answer" type="text" placeholder="Answer B" value="${data.answers ? (data.answers[1] || '') : ''}" required>
+                    <input class="small-input answer" type="text" placeholder="Answer C" value="${data.answers ? (data.answers[2] || '') : ''}">
+                    <input class="small-input answer" type="text" placeholder="Answer D" value="${data.answers ? (data.answers[3] || '') : ''}">
+                    <select class="small-input correct">
+                        <option value="0">Correct: A</option>
+                        <option value="1">Correct: B</option>
+                        <option value="2">Correct: C</option>
+                        <option value="3">Correct: D</option>
+                    </select>
+                </div>
+                <div class="question-actions">
+                    <button type="button" class="ghost remove-question">Remove</button>
+                </div>
+            `;
+            const correctSel = card.querySelector('.correct');
+            if (typeof data.correct === 'number') {
+                correctSel.value = String(data.correct);
+            }
+            card.querySelector('.remove-question').addEventListener('click', () => {
+                card.remove();
+                Array.from(questionsEl.children).forEach((c, i) => {
+                    const h = c.querySelector('h4');
+                    if (h) h.textContent = `Question ${i + 1}`;
+                });
+            });
+            questionsEl.appendChild(card);
+        }
+
+        addQuestionBtn.addEventListener('click', () => addQuestionCard());
+
+        form.addEventListener('submit', (e) => {
+            e.preventDefault();
+            const quizzes = loadQuizzes();
+            const questionCards = Array.from(questionsEl.querySelectorAll('.question-card'));
+            const questions = questionCards.map(card => {
+                const text = card.querySelector('.question-text').value.trim();
+                const answers = Array.from(card.querySelectorAll('.answer')).map(a => a.value.trim()).filter(Boolean);
+                const correct = parseInt(card.querySelector('.correct').value, 10) || 0;
+                return { text, answers, correct };
+            }).filter(q => q.text && q.answers.length >= 2);
+            const errorEl = document.getElementById('builder-error');
+            if (errorEl) { errorEl.style.display = 'none'; errorEl.textContent = ''; }
+            if (!questions.length) {
+                if (errorEl) { errorEl.textContent = 'Add at least one question with two answers.'; errorEl.style.display = 'block'; }
+                return;
+            }
+            const missingAnswer = questions.find(q => q.answers.length < 2);
+            if (missingAnswer && errorEl) {
+                errorEl.textContent = 'Each question needs at least two answers.';
+                errorEl.style.display = 'block';
+                return;
+            }
+            const data = {
+                id: idField.value || crypto.randomUUID(),
+                title: document.getElementById('quiz-title').value.trim(),
+                desc: document.getElementById('quiz-desc').value.trim(),
+                subject: document.getElementById('quiz-subject').value.trim(),
+                count: parseInt(document.getElementById('quiz-count').value, 10) || 10,
+                level: document.getElementById('quiz-level').value || 'Intermediate',
+                questions
+            };
+            const idx = quizzes.findIndex(q => q.id === data.id);
+            if (idx >= 0) {
+                quizzes[idx] = data;
+            } else {
+                quizzes.push(data);
+            }
+            saveQuizzes(quizzes);
+            window.location.href = 'campus-quiz.html?built=1';
+        });
+
+        cancelBtn.addEventListener('click', () => {
+            window.location.href = 'campus-quiz.html';
+        });
+    </script>
+</body>
+</html>
