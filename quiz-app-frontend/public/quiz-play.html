@@ -1,0 +1,377 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="Quizey question runner">
+    <title>Quizey | Play</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Baloo+2:wght@600&family=Nunito:wght@400;600;700;800&display=swap" rel="stylesheet">
+    <style>
+        :root { --text-strong: #0f172a; --text-muted: #526275; }
+        * { box-sizing: border-box; }
+        body {
+            margin: 0;
+            min-height: 100vh;
+            font-family: 'Nunito', system-ui, sans-serif;
+            color: var(--text-strong);
+            background: linear-gradient(180deg, #b5e2ff, #d4c8ff);
+            padding: clamp(20px, 4vw, 40px);
+            position: relative;
+            overflow-x: hidden;
+        }
+        body::before, body::after {
+            content: '';
+            position: absolute;
+            border-radius: 50%;
+            filter: blur(70px);
+            opacity: 0.22;
+            z-index: 0;
+        }
+        body::before { width: 420px; height: 420px; background: #73e7ff; top: -220px; left: -160px; }
+        body::after { width: 360px; height: 360px; background: #c69bff; bottom: -200px; right: -150px; }
+        .page { position: relative; z-index: 1; max-width: 960px; margin: 0 auto; display: grid; gap: 14px; }
+        header { display: flex; justify-content: space-between; align-items: center; gap: 12px; }
+        .title { display: flex; align-items: center; gap: 10px; }
+        .tag {
+            width: 46px; height: 46px; border-radius: 14px;
+            background: rgba(255,255,255,0.92);
+            box-shadow: 0 8px 18px rgba(33,43,72,0.14);
+            display: grid; place-items: center; font-size: 22px;
+        }
+        h1 { margin: 0; font-family: 'Baloo 2', cursive; font-size: clamp(22px, 4vw, 32px); }
+        .crumbs { display: flex; gap: 10px; align-items: center; font-weight: 700; }
+        .crumbs a { color: var(--text-strong); text-decoration: none; }
+        .card {
+            padding: 18px 18px;
+            background: rgba(255,255,255,0.94);
+            border-radius: 18px;
+            box-shadow: 0 16px 30px rgba(33,43,72,0.14);
+            border: 1px solid rgba(255,255,255,0.8);
+        }
+        .progress {
+            height: 10px;
+            border-radius: 999px;
+            background: rgba(15,23,42,0.08);
+            overflow: hidden;
+            margin: 8px 0 0;
+        }
+        .progress-fill {
+            height: 100%;
+            background: linear-gradient(120deg, #66d3ff, #9c6bff);
+            width: 0%;
+            transition: width 250ms ease;
+        }
+        .question {
+            font-size: clamp(18px, 3vw, 24px);
+            font-weight: 800;
+            margin: 14px 0 10px;
+        }
+        .choices { display: grid; gap: 10px; }
+        .choice {
+            padding: 14px 14px;
+            border-radius: 14px;
+            background: rgba(255,255,255,0.96);
+            border: 1px solid rgba(15,23,42,0.08);
+            box-shadow: 0 12px 22px rgba(33,43,72,0.12);
+            cursor: pointer;
+            text-align: left;
+            font-weight: 700;
+            transition: transform 0.15s ease, box-shadow 0.15s ease, border-color 0.15s ease;
+        }
+        .choice:hover { transform: translateY(-2px); box-shadow: 0 16px 28px rgba(33,43,72,0.16); }
+        .choice.correct { border-color: #4ade80; background: linear-gradient(160deg, #ecfdf3, #f6fff9); }
+        .choice.wrong { border-color: #fb7185; background: linear-gradient(160deg, #fff1f2, #ffe5e9); }
+        .footer { display: flex; justify-content: space-between; align-items: center; gap: 10px; flex-wrap: wrap; }
+        .muted { color: var(--text-muted); font-weight: 700; }
+        .btn {
+            display: inline-flex; align-items: center; gap: 8px;
+            padding: 10px 14px; border-radius: 12px; border: none;
+            font-weight: 800; cursor: pointer; text-decoration: none; color: #0f172a;
+        }
+        .btn.primary { background: linear-gradient(120deg, #66d3ff, #9c6bff); box-shadow: 0 12px 22px rgba(120,116,255,0.22); }
+        .btn.secondary { background: rgba(255,255,255,0.94); border: 1px solid rgba(15,23,42,0.08); }
+        .summary { display: grid; gap: 10px; }
+        .summary h2 { margin: 0; font-size: 24px; }
+        .modal {
+            position: fixed; inset: 0;
+            display: grid; place-items: center;
+            background: rgba(15,23,42,0.45);
+            backdrop-filter: blur(6px);
+            padding: 16px;
+            opacity: 0; visibility: hidden;
+            transition: opacity 0.2s ease, visibility 0.2s ease;
+            z-index: 50;
+        }
+        .modal.is-open { opacity: 1; visibility: visible; }
+        .modal-card {
+            width: min(440px, 100%);
+            background: rgba(255,255,255,0.98);
+            border-radius: 18px;
+            box-shadow: 0 22px 44px rgba(33,43,72,0.24);
+            border: 1px solid rgba(255,255,255,0.85);
+            padding: 18px 18px 16px;
+            display: grid;
+            gap: 10px;
+        }
+        .modal-head { display: flex; align-items: center; justify-content: space-between; gap: 10px; }
+        .modal-title { margin: 0; font-size: 20px; font-weight: 800; }
+        .modal-close {
+            width: 32px; height: 32px;
+            border-radius: 10px;
+            border: none;
+            background: rgba(15,23,42,0.08);
+            cursor: pointer;
+            font-weight: 800;
+        }
+        .modal-body { display: grid; gap: 6px; color: var(--text-muted); font-weight: 700; }
+        @media (max-width: 640px) { header { flex-direction: column; align-items: flex-start; } }
+    </style>
+</head>
+<body>
+    <div class="page">
+        <header>
+            <div class="title">
+                <div class="tag" id="icon">📚</div>
+                <div>
+                    <h1 id="title">Quiz</h1>
+                    <div class="crumbs">
+                        <a href="campus-quiz.html">Home</a>
+                        <span aria-hidden="true">/</span>
+                        <a id="detail-link" href="quiz-detail.html">Quiz detail</a>
+                    </div>
+                </div>
+            </div>
+            <a class="btn secondary" href="quiz-detail.html">Back to detail</a>
+        </header>
+
+        <section class="card" id="play-card">
+            <div class="muted" id="progress-label">Question 1 of 5</div>
+            <div class="progress" aria-label="Progress"><div class="progress-fill" id="progress-fill"></div></div>
+            <div class="question" id="question-text"></div>
+            <div class="choices" id="choices"></div>
+            <div class="footer">
+                <span class="muted" id="score">Score: 0</span>
+                <button class="btn primary" id="next-btn" disabled>Next</button>
+            </div>
+        </section>
+
+        <section class="card summary" id="summary" hidden>
+            <h2>Great run!</h2>
+            <p id="summary-score">You scored 0.</p>
+            <div class="footer">
+                <a class="btn primary" href="campus-quiz.html">Pick another quiz</a>
+                <a class="btn secondary" id="retry" href="#">Replay</a>
+            </div>
+        </section>
+
+        <div class="modal" id="explain-modal" role="dialog" aria-modal="true" aria-hidden="true">
+            <div class="modal-card">
+                <div class="modal-head">
+                    <h3 class="modal-title">Correct answer</h3>
+                    <button class="modal-close" type="button" aria-label="Close explanation">×</button>
+                </div>
+                <div class="modal-body">
+                    <div id="explain-answer"></div>
+                    <div id="explain-why"></div>
+                </div>
+                <div class="footer" style="justify-content:flex-end;">
+                    <button class="btn primary" type="button" id="explain-ok">Got it</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        const params = new URLSearchParams(location.search);
+        const subject = params.get('subject') || 'featured';
+        const isCustom = params.get('custom') === '1';
+        const storageKey = 'quizzyCustomQuizzes';
+
+        function loadCustomDeck(id) {
+            try {
+                const raw = localStorage.getItem(storageKey);
+                const list = raw ? JSON.parse(raw) : [];
+                const match = list.find(q => q.id === id);
+                if (!match || !Array.isArray(match.questions) || !match.questions.length) return null;
+                return {
+                    icon: '🛠️',
+                    title: match.title || 'Custom Quiz',
+                    questions: match.questions.map((q, idx) => ({
+                        q: q.text || `Question ${idx + 1}`,
+                        a: q.answers && q.answers.length ? q.answers : ['Option A', 'Option B', 'Option C', 'Option D'],
+                        correct: typeof q.correct === 'number' ? q.correct : 0,
+                        why: q.why || 'This is the correct option for this question.'
+                    }))
+                };
+            } catch {
+                return null;
+            }
+        }
+
+        const decks = {
+            science: {
+                icon: '🧪', title: 'Science Quiz',
+                questions: [
+                    { q: 'What part of the cell produces energy?', a: ['Nucleus', 'Mitochondria', 'Ribosome', 'Chloroplast'], correct: 1, why: 'Mitochondria generate ATP, the cell’s energy currency.' },
+                    { q: 'Water boils at what temperature at sea level?', a: ['90°C', '95°C', '100°C', '105°C'], correct: 2, why: 'At standard pressure (1 atm), water boils at 100°C.' },
+                    { q: 'What force keeps planets in orbit?', a: ['Magnetism', 'Friction', 'Gravity', 'Pressure'], correct: 2, why: 'Gravity provides the centripetal force that keeps planets in orbit.' }
+                ]
+            },
+            history: {
+                icon: '⏱️', title: 'History Quiz',
+                questions: [
+                    { q: 'The Renaissance began in which country?', a: ['France', 'Italy', 'Germany', 'Spain'], correct: 1, why: 'The Renaissance started in Italian city-states like Florence and Venice.' },
+                    { q: 'The Great Wall is in?', a: ['India', 'China', 'Japan', 'Mongolia'], correct: 1, why: 'The Great Wall was built across northern China for defense.' },
+                    { q: 'Who was the first US President?', a: ['George Washington', 'Abraham Lincoln', 'John Adams', 'Thomas Jefferson'], correct: 0, why: 'George Washington served as the first President starting in 1789.' }
+                ]
+            },
+            math: {
+                icon: '📐', title: 'Math Quiz',
+                questions: [
+                    { q: 'What is 7 x 8?', a: ['54', '56', '58', '64'], correct: 1, why: '7 times 8 equals 56.' },
+                    { q: 'Solve: 15 - 9 = ?', a: ['4', '5', '6', '7'], correct: 2, why: '15 minus 9 leaves 6.' },
+                    { q: 'Area of a rectangle: 5 x 3', a: ['8', '12', '15', '30'], correct: 2, why: 'Area is length times width: 5 × 3 = 15.' }
+                ]
+            },
+            pop: {
+                icon: '🎵', title: 'Pop Culture Quiz',
+                questions: [
+                    { q: 'Which award honors film achievements?', a: ['Grammys', 'Oscars', 'Tonys', 'Emmys'], correct: 1, why: 'The Oscars (Academy Awards) are for film achievements.' },
+                    { q: 'Streaming hit with the Upside Down?', a: ['Stranger Things', 'The Crown', 'Loki', 'Dark'], correct: 0, why: '“Stranger Things” features the Upside Down dimension.' },
+                    { q: 'Who sings "Shake It Off"?', a: ['Rihanna', 'Taylor Swift', 'Adele', 'Beyoncé'], correct: 1, why: '“Shake It Off” is a Taylor Swift song from 1989.' }
+                ]
+            },
+            random: {
+                icon: '🔀', title: 'Random Quiz',
+                questions: [
+                    { q: 'Capital of Japan?', a: ['Tokyo', 'Seoul', 'Beijing', 'Kyoto'], correct: 0, why: 'Tokyo is the capital city of Japan.' },
+                    { q: 'H2O is?', a: ['Hydrogen', 'Helium', 'Water', 'Oxygen'], correct: 2, why: 'H2O is the chemical formula for water.' },
+                    { q: '5 + 7 = ?', a: ['10', '11', '12', '13'], correct: 2, why: '5 plus 7 equals 12.' }
+                ]
+            },
+            featured: {
+                icon: '🌟', title: 'Featured Quiz',
+                questions: [
+                    { q: 'Light speed is about?', a: ['3e5 km/s', '300 km/s', '30 km/s', '3 km/s'], correct: 0, why: 'Light travels roughly 300,000 km/s in vacuum.' },
+                    { q: 'Prime number?', a: ['15', '21', '29', '33'], correct: 2, why: '29 is only divisible by 1 and itself.' },
+                    { q: 'Industrial Revolution began in?', a: ['France', 'USA', 'UK', 'Germany'], correct: 2, why: 'It began in Great Britain in the late 18th century.' }
+                ]
+            }
+        };
+
+        const customDeck = isCustom ? loadCustomDeck(subject) : null;
+        const deck = customDeck || decks[subject] || decks.featured;
+
+        document.getElementById('icon').textContent = deck.icon;
+        document.getElementById('title').textContent = deck.title;
+        document.title = `Quizey | ${deck.title}`;
+        document.getElementById('detail-link').href = `quiz-detail.html?subject=${encodeURIComponent(subject)}`;
+        document.querySelector('.btn.secondary').href = `quiz-detail.html?subject=${encodeURIComponent(subject)}`;
+
+        const qText = document.getElementById('question-text');
+        const choicesEl = document.getElementById('choices');
+        const progressFill = document.getElementById('progress-fill');
+        const progressLabel = document.getElementById('progress-label');
+        const scoreEl = document.getElementById('score');
+        const nextBtn = document.getElementById('next-btn');
+        const playCard = document.getElementById('play-card');
+        const summary = document.getElementById('summary');
+        const summaryScore = document.getElementById('summary-score');
+        const retry = document.getElementById('retry');
+        const modal = document.getElementById('explain-modal');
+        const modalAnswer = document.getElementById('explain-answer');
+        const modalWhy = document.getElementById('explain-why');
+        const modalClose = document.querySelector('.modal-close');
+        const modalOk = document.getElementById('explain-ok');
+
+        let index = 0;
+        let score = 0;
+        let locked = false;
+
+        function openModal(answer, reason) {
+            if (modalAnswer) modalAnswer.textContent = `Correct answer: ${answer}`;
+            if (modalWhy) modalWhy.textContent = reason || 'This is the correct option for this question.';
+            if (modal) {
+                modal.classList.add('is-open');
+                modal.setAttribute('aria-hidden', 'false');
+                if (modalOk) modalOk.focus();
+            }
+        }
+
+        function closeModal() {
+            if (modal) {
+                modal.classList.remove('is-open');
+                modal.setAttribute('aria-hidden', 'true');
+            }
+        }
+        if (modalClose) modalClose.addEventListener('click', closeModal);
+        if (modalOk) modalOk.addEventListener('click', closeModal);
+        if (modal) {
+            modal.addEventListener('click', (e) => { if (e.target === modal) closeModal(); });
+            document.addEventListener('keydown', (e) => {
+                if (e.key === 'Escape' && modal.classList.contains('is-open')) closeModal();
+            });
+        }
+
+        function renderQuestion() {
+            const total = deck.questions.length;
+            const current = deck.questions[index];
+            qText.textContent = current.q;
+            progressLabel.textContent = `Question ${index + 1} of ${total}`;
+            progressFill.style.width = `${((index) / total) * 100}%`;
+            scoreEl.textContent = `Score: ${score}`;
+            nextBtn.disabled = true;
+            locked = false;
+            choicesEl.innerHTML = '';
+            current.a.forEach((text, i) => {
+                const btn = document.createElement('button');
+                btn.className = 'choice';
+                btn.type = 'button';
+                btn.textContent = text;
+                btn.addEventListener('click', () => selectChoice(btn, i === current.correct));
+                choicesEl.appendChild(btn);
+            });
+        }
+
+        function selectChoice(btn, isCorrect) {
+            if (locked) return;
+            locked = true;
+            const buttons = choicesEl.querySelectorAll('.choice');
+            buttons.forEach((el, i) => {
+                el.disabled = true;
+                const correctIndex = deck.questions[index].correct;
+                if (i === correctIndex) el.classList.add('correct');
+            });
+            if (isCorrect) {
+                btn.classList.add('correct');
+                score += 20;
+            } else {
+                btn.classList.add('wrong');
+                const correctIndex = deck.questions[index].correct;
+                const answerText = deck.questions[index].a[correctIndex] || 'N/A';
+                const reason = deck.questions[index].why || 'This is the correct option for this question.';
+                openModal(answerText, reason);
+            }
+            scoreEl.textContent = `Score: ${score}`;
+            nextBtn.disabled = false;
+        }
+
+        nextBtn.addEventListener('click', () => {
+            if (index < deck.questions.length - 1) {
+                index += 1;
+                renderQuestion();
+            } else {
+                progressFill.style.width = '100%';
+                playCard.hidden = true;
+                summary.hidden = false;
+                summaryScore.textContent = `You scored ${score} out of ${deck.questions.length * 20}.`;
+                retry.href = `quiz-play.html?subject=${encodeURIComponent(subject)}`;
+            }
+        });
+
+        renderQuestion();
+    </script>
+</body>
+</html>

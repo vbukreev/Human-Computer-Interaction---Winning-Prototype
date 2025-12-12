@@ -1,0 +1,265 @@
+﻿<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="Quizey Quiz App home page with a Monsters University inspired theme.">
+    <title>Quizey Quiz App</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;500;700&family=Roboto+Slab:wght@400;600&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="styles/main.css">
+</head>
+<body class="light">
+    <div id="root" class="app-shell">
+        <header class="mu-header" id="home">
+            <div class="brand">
+                <img class="brand-insignia" src="assets/2d432e807208232a68ea4b09b52dde01.jpg" alt="Monsters University logo">
+                <div class="brand-copy">
+                    <p class="brand-topline">Monsters University</p>
+                    <h1 class="brand-title">Quizey Quiz League</h1>
+                </div>
+            </div>
+            <nav class="mu-nav" aria-label="Main navigation">
+                <button class="nav-toggle" aria-expanded="false" aria-controls="primary-menu">Menu</button>
+                <ul id="primary-menu">
+                    <li><a href="#home">Home</a></li>
+                    <li><a href="#quizzes">Quizzes</a></li>
+                    <li><a href="#highlights">Highlights</a></li>
+                    <li><a href="#campus-life">Campus Life</a></li>
+                    <li><a href="#contact">Contact</a></li>
+                </ul>
+            </nav>
+        </header>
+
+        <main>
+                        <section class="hero" aria-labelledby="hero-title">
+                <div class="hero-content">
+                    <p class="hero-kicker">Welcome to Scare Floor Studies</p>
+                    <h2 id="hero-title">Train with the top scarers-in-training</h2>
+                    <p class="hero-description">Gear up for quizzes that challenge your roar, your brains, and your reflexes. Earn badges, unlock themed tournaments, and climb the campus leaderboard.</p>
+                    <div class="hero-actions">
+                        <button class="btn btn-primary" onclick="startQuiz()">Start Quiz</button>
+                        <a class="btn btn-secondary" href="#quizzes">Browse Quizzes</a>
+                    </div>
+                    <dl class="hero-stats">
+                        <div>
+                            <dt>Active Monsters</dt>
+                            <dd>4,820</dd>
+                        </div>
+                        <div>
+                            <dt>Scare Badges Earned</dt>
+                            <dd>12,403</dd>
+                        </div>
+                        <div>
+                            <dt>Campus Challenges</dt>
+                            <dd>57</dd>
+                        </div>
+                    </dl>
+                </div>
+                <div class="hero-visual" role="presentation" aria-hidden="true">
+                    <div class="hero-callout hero-callout--mike">
+                        <img class="hero-figure hero-figure--mike" src="assets/s-l1200.jpg" alt="Mike Wazowski raising his arms">
+                        <div class="hero-card">
+                            <p>"Ace every fear factor round with Quizey."</p>
+                            <span>- Mike, Strategy Coach</span>
+                        </div>
+                    </div>
+                    <div class="hero-planet">
+                        <svg class="hero-orbit" viewBox="0 0 200 200" role="presentation">
+                            <defs>
+                                <path id="orbitPath" d="M100,20 A80,80 0 1,1 99.9,20"></path>
+                            </defs>
+                            <text>
+                                <textPath href="#orbitPath" startOffset="50%" text-anchor="middle">QUIZEY  |  QUIZEY  |  QUIZEY  |  QUIZEY  |  </textPath>
+                            </text>
+                        </svg>
+                        <div class="hero-core"></div>
+                    </div>
+                    <div class="hero-callout hero-callout--sulley">
+                        <div class="hero-card">
+                            <p>"Nothing gets past my roar analytics."</p>
+                            <span>- Sulley, Quiz Captain</span>
+                        </div>
+                        <img class="hero-figure hero-figure--sulley" src="assets/Sulley_Monsters_University.jpeg" alt="Sulley waving in his Monsters University jacket">
+                    </div>
+                </div>
+            </section>
+
+            <section class="quiz-categories" id="quizzes" aria-labelledby="quiz-heading">
+                <div class="section-heading">
+                    <h2 id="quiz-heading">Choose your scare speciality</h2>
+                    <p>Pick a path and master the art of knowledge&mdash;each deck crafted by teacher or friends.</p>
+                </div>
+                <div class="category-grid">
+                    <article class="category-card">
+                        <h3>Classes 101</h3>
+                        <p>Study species, traits, math and folklore with quizzes that adapt to your level.</p>
+                        <a href="#" class="card-link">Enter course</a>
+                    </article>
+                    <article class="category-card">
+                        <h3>Scare Tactics Lab</h3>
+                        <p>Simulate scenarios with timed challenges and reaction-based questions.</p>
+                        <a href="#" class="card-link">Start drills</a>
+                    </article>
+                    <article class="category-card">
+                        <h3>Laugh Power Metrics</h3>
+                        <p>Convert giggles into energy&mdash;crunch Laugh Floor data sets to power up.</p>
+                        <a href="#" class="card-link">Analyze data</a>
+                    </article>
+                    <article class="category-card">
+                        <h3>Campus Lore</h3>
+                        <p>Test your knowledge on history, iconic alumni, and legendary tournaments.</p>
+                        <a href="campus-lore.html" class="card-link">Explore campus lore</a>
+                    </article>
+                </div>
+            </section>
+
+            <section class="highlights" id="highlights" aria-labelledby="highlights-title">
+                <div class="section-heading">
+                    <h2 id="highlights-title">This week on campus</h2>
+                    <p>Earn bonus XP during themed campaigns and track your dorm rank in real time.</p>
+                </div>
+                <div class="highlight-cards">
+                    <article class="highlight-card">
+                        <h3>Rival Dorm Showdown</h3>
+                        <p>Compete for the trophy in a series of three escalating quiz rounds.</p>
+                        <span class="tag">Live Saturday</span>
+                    </article>
+                    <article class="highlight-card">
+                        <h3>Professors Masterclass</h3>
+                        <p>Unlock rare questions curated by the legendary scarer himself.</p>
+                        <span class="tag tag--success">New</span>
+                    </article>
+                    <article class="highlight-card">
+                        <h3>Library of Laughs</h3>
+                        <p>Collect hidden punchlines across campus to boost your energy multiplier.</p>
+                        <span class="tag tag--warning">Limited</span>
+                    </article>
+                </div>
+            </section>
+
+            <section class="campus-life" id="campus-life" aria-labelledby="campus-title">
+                <div class="section-heading">
+                    <h2 id="campus-title">Life at Party x Quizey</h2>
+                    <p>Blend study groups, scare drills, and leaderboard triumphs with friends from every dorm.</p>
+                </div>
+                <div class="campus-grid">
+                    <article>
+                        <h3>Squad Builder</h3>
+                        <p>Create private quiz squads with tailored practice sets and shared calendars.</p>
+                    </article>
+                    <article>
+                        <h3>Daily Mischief Meter</h3>
+                        <p>Track streaks, unlock mischievous avatars, and earn campus-wide boosts.</p>
+                    </article>
+                    <article>
+                        <h3>AR Scare Sim</h3>
+                        <p>Pair the app with MU's AR lab to rehearse high-pressure scare routines.</p>
+                    </article>
+                </div>
+            </section>
+
+            <section class="testimonials" aria-labelledby="testimonial-title">
+                <div class="section-heading">
+                    <h2 id="testimonial-title">Cheer from the quad</h2>
+                </div>
+                <div class="testimonial-track">
+                    <figure>
+                        <blockquote>
+                            "Quizey makes every study drill feel like a game night. My accuracy is up 38%."
+                        </blockquote>
+                        <figcaption>
+                            <span class="name">Roz</span>
+                            <span class="role">Dean of Assessment</span>
+                        </figcaption>
+                    </figure>
+                    <figure>
+                        <blockquote>
+                            "The leaderboard sparks friendly dorm rivalries. Catch up if you can!"
+                        </blockquote>
+                        <figcaption>
+                            <span class="name">Art</span>
+                            <span class="role">ROR Member</span>
+                        </figcaption>
+                    </figure>
+                    <figure>
+                        <blockquote>
+                            "Accessibility mode keeps everyone included&mdash;tentacles, wings, and all."
+                        </blockquote>
+                        <figcaption>
+                            <span class="name">Celia Mae</span>
+                            <span class="role">Accessibility Council</span>
+                        </figcaption>
+                    </figure>
+                </div>
+            </section>
+
+            <section class="callout" id="contact" aria-labelledby="callout-title">
+                <div class="callout-card">
+                    <h2 id="callout-title">Ready to roar louder than the competition?</h2>
+                    <p>Create your Quizey profile, sync with your schools or work courses, and charge into the arena.</p>
+                    <form class="callout-form">
+                        <label class="sr-only" for="email">Email address</label>
+                        <input type="email" id="email" name="email" placeholder="you@monstersuniversity.edu" required>
+                        <button type="submit" class="btn btn-primary">Join the league</button>
+                    </form>
+                </div>
+            </section>
+        </main>
+
+        <footer class="mu-footer">
+            <div class="footer-brand">
+                <strong>Quizey</strong> <span> themed using Monsters University</span>
+            </div>
+            <div class="footer-links">
+                <a href="#home">Back to top</a>
+                <a href="#quizzes">Quizzes</a>
+                <a href="#contact">Support</a>
+            </div>
+            <p class="footer-note">&copy; <span id="year"></span> Quizey Labs Copyright Reserved.</p>
+        </footer>
+    </div>
+
+    <!-- JavaScript-->
+    <script>
+        const navToggle = document.querySelector('.nav-toggle');
+        const menu = document.getElementById('primary-menu');
+        if (navToggle && menu) {
+            navToggle.addEventListener('click', () => {
+                const expanded = navToggle.getAttribute('aria-expanded') === 'true';
+                navToggle.setAttribute('aria-expanded', String(!expanded));
+                menu.classList.toggle('is-open');
+            });
+        }
+
+        function startQuiz() {
+            const quizSection = document.getElementById('quizzes');
+            if (quizSection) {
+                quizSection.scrollIntoView({ behavior: 'smooth' });
+            }
+        }
+
+        const yearElement = document.getElementById('year');
+        if (yearElement) {
+            yearElement.textContent = String(new Date().getFullYear());
+        }
+    </script>
+    <script src="bundle.js"></script>
+</body>
+</html>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
